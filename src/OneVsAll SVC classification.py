@@ -28,53 +28,53 @@ def fit_genres(line):
     return labels
 
 def teach_and_predict():
-	X = []
-	Y = []
-	data = io.open('D:\data.txt', 'r', encoding='utf-8').readlines()
-	counter = 2
-	num_of_learn = 40000
-	num_of_test = 8000
-	test_reviews = []
+    X = []
+    Y = []
+    data = io.open('D:\data.txt', 'r', encoding='utf-8').readlines()
+    counter = 2
+    num_of_learn = 40000
+    num_of_test = 8000
+    test_reviews = []
     test_labels = []
-	description = ""
-	has_labels = True
-	for line in data:
-		if counter == 0:
-			labels = fit_genres(line)
-			if len(labels) != 0:
-				if num_of_learn > 0:
-					Y.append(labels)
-				else:
-					test_labels.append(labels)
-				has_labels = True
-			else:
-				has_labels = False
-		if line == "\n":
-			if has_labels == True:
-				if num_of_learn > 0:
-					X.append(description)
-				else:
-					test_reviews.append([description])
-			counter = 2
-			description = ""
-		if counter < 0:
-			description += line
-		counter -= 1
-		num_of_learn -= 1
-		if num_of_learn < 0:
-			num_of_test -= 1
-			if num_of_test < 0:
-				break
+    description = ""
+    has_labels = True
+    for line in data:
+        if counter == 0:
+            labels = fit_genres(line)
+            if len(labels) != 0:
+                if num_of_learn > 0:
+                    Y.append(labels)
+                else:
+                    test_labels.append(labels)
+                has_labels = True
+            else:
+                has_labels = False
+        if line == "\n":
+            if has_labels == True:
+                if num_of_learn > 0:
+                    X.append(description)
+                else:
+                    test_reviews.append([description])
+            counter = 2
+            description = ""
+        if counter < 0:
+            description += line
+        counter -= 1
+        num_of_learn -= 1
+        if num_of_learn < 0:
+            num_of_test -= 1
+            if num_of_test < 0:
+                break
 
-	count_vect = CountVectorizer()
-	mlb = MultiLabelBinarizer()
-	X_transformed = count_vect.fit_transform(X).toarray()
-	Y_transformed = mlb.fit_transform(Y)
+    count_vect = CountVectorizer()
+    mlb = MultiLabelBinarizer()
+    X_transformed = count_vect.fit_transform(X).toarray()
+    Y_transformed = mlb.fit_transform(Y)
     #classif = OneVsRestClassifier(SVC(kernel='linear'))
     classif = OneVsRestClassifier(LinearSVC())
-	predicter = classif.fit(X_transformed, Y_transformed)
+    predicter = classif.fit(X_transformed, Y_transformed)
 
-	f = open('D:\dans.txt', 'w')
+    f = open('D:\dans.txt', 'w')
 
     for review, labels in zip(test_reviews, test_labels):
         predicted_labels = mlb.inverse_transform(predicter.predict(count_vect.transform(review).toarray()))
@@ -82,7 +82,7 @@ def teach_and_predict():
         f.write("\n")
         f.write('p: ' + ' '.join(str(i) for i in predicted_labels[0]))
         f.write("\n")
-		
+
     f.close()
 
 def num_of_intersection(test, predicted):
@@ -126,5 +126,5 @@ def run():
 	teach_and_predict()
 	test, predicted = read_labels()
 	return calc_stats(test, predicted)
-	
+
 print run()
