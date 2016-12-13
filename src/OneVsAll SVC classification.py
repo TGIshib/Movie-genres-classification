@@ -9,6 +9,7 @@ all_genres = sorted(['Drama', 'Comedy', 'Action', 'Thriller', 'Romance', 'Family
 
 len_all_genres = len(all_genres)
 
+
 def fit_genres(line):
     labels = []
     genres = line.split(' ');
@@ -26,6 +27,7 @@ def fit_genres(line):
         else:
             p1 += 1
     return labels
+
 
 def teach_and_predict():
     X = []
@@ -55,16 +57,16 @@ def teach_and_predict():
                     X.append(description)
                 else:
                     test_reviews.append([description])
+                num_of_learn -= 1
+                if num_of_learn < 0:
+                    num_of_test -= 1
+                    if num_of_test < 0:
+                        break
             counter = 2
             description = ""
         if counter < 0:
             description += line
         counter -= 1
-        num_of_learn -= 1
-        if num_of_learn < 0:
-            num_of_test -= 1
-            if num_of_test < 0:
-                break
 
     count_vect = CountVectorizer()
     mlb = MultiLabelBinarizer()
@@ -85,6 +87,7 @@ def teach_and_predict():
 
     f.close()
 
+
 def num_of_intersection(test, predicted):
     p1 = p2 = res = 0
     while p1 < len(test) and p2 < len(predicted):
@@ -98,6 +101,7 @@ def num_of_intersection(test, predicted):
             p2 += 1
     return res
 
+
 def calc_stats(test, predicted):
     prec = recall = f1 = 0.0
     for tlabels, prlabels in zip(test, predicted):
@@ -108,6 +112,7 @@ def calc_stats(test, predicted):
     recall = recall / len(test)
     f1 = 2 * prec * recall / (prec + recall)
     return prec, recall, f1
+
 
 def read_labels():
     test = []
@@ -122,9 +127,10 @@ def read_labels():
                 test.append([int(num) for num in data[i-1][3:].replace('\n', '').split(' ')])
     return test, predicted
 
+
 def run():
-	teach_and_predict()
-	test, predicted = read_labels()
-	return calc_stats(test, predicted)
+    teach_and_predict()
+    test, predicted = read_labels()
+    return calc_stats(test, predicted)
 
 print run()
